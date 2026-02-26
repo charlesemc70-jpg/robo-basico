@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Robô Criador de Sites Básico</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+display:flex;
+}
+
+#menu{
+width:220px;
+background:#1e293b;
+padding:15px;
+}
+
+#editor{
+flex:1;
+padding:20px;
+min-height:100vh;
+background:#111827;
+}
+
+button{
+width:100%;
+padding:10px;
+margin:5px 0;
+border:none;
+border-radius:6px;
+cursor:pointer;
+background:#22c55e;
+color:white;
+}
+
+input{
+width:100%;
+padding:8px;
+margin:5px 0;
+border-radius:6px;
+border:none;
+}
+
+.elemento{
+margin:10px 0;
+padding:10px;
+background:#1f2937;
+border-radius:6px;
+}
+
+.hidden{display:none;}
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.popup-box{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+<h3>Componentes</h3>
+
+<button onclick="addTitulo()">Adicionar Título</button>
+<button onclick="addTexto()">Adicionar Texto</button>
+<button onclick="addBotao()">Adicionar Botão</button>
+<button onclick="addImagem()">Adicionar Imagem</button>
+<button onclick="addContador()">Adicionar Contador 20min</button>
+
+<hr>
+
+<button onclick="salvar()">Salvar</button>
+<button onclick="importar()">Importar</button>
+<button onclick="exportar()">Exportar HTML</button>
+
+</div>
+
+<div id="editor" contenteditable="true">
+<h1>Sua Página Começa Aqui</h1>
+<p>Edite esse texto livremente.</p>
+</div>
+
+<div id="popup" class="popup hidden">
+<div class="popup-box">
+<h2>Espere!</h2>
+<p>Receba um desconto especial antes de sair!</p>
+<button onclick="fecharPopup()">Continuar</button>
+</div>
+</div>
+
+<script>
+
+function addTitulo(){
+let el=document.createElement("h2");
+el.innerText="Novo Título";
+el.className="elemento";
+editor.appendChild(el);
+}
+
+function addTexto(){
+let el=document.createElement("p");
+el.innerText="Novo texto aqui...";
+el.className="elemento";
+editor.appendChild(el);
+}
+
+function addBotao(){
+let link=prompt("Cole o link do produto:");
+let el=document.createElement("button");
+el.innerText="Comprar Agora";
+el.onclick=function(){
+window.location.href=link;
+};
+editor.appendChild(el);
+}
+
+function addImagem(){
+let url=prompt("Cole URL da imagem:");
+let img=document.createElement("img");
+img.src=url;
+img.style.maxWidth="100%";
+img.className="elemento";
+editor.appendChild(img);
+}
+
+function addContador(){
+let div=document.createElement("div");
+div.className="elemento";
+editor.appendChild(div);
+
+let tempo=1200;
+
+let intervalo=setInterval(()=>{
+let m=Math.floor(tempo/60);
+let s=tempo%60;
+s=s<10?"0"+s:s;
+div.innerText="Tempo restante: "+m+":"+s;
+tempo--;
+if(tempo<0){
+clearInterval(intervalo);
+div.innerText="Oferta encerrada";
+}
+},1000);
+}
+
+function salvar(){
+localStorage.setItem("roboBasico",editor.innerHTML);
+alert("Salvo com sucesso!");
+}
+
+function importar(){
+let conteudo=localStorage.getItem("roboBasico");
+if(conteudo){
+editor.innerHTML=conteudo;
+alert("Importado!");
+}
+}
+
+function exportar(){
+let paginaCompleta=`
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Minha Página</title>
+</head>
+<body>
+${editor.innerHTML}
+</body>
+</html>
+`;
+
+let blob=new Blob([paginaCompleta],{type:"text/html"});
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="pagina.html";
+a.click();
+}
+
+document.addEventListener("mouseleave",()=>{
+popup.classList.remove("hidden");
+});
+
+function fecharPopup(){
+popup.classList.add("hidden");
+}
+
+</script>
+
+</body>
+</html>
